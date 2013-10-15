@@ -1,0 +1,32 @@
+
+
+
+def get_id(tipo='sandbox'):
+
+
+	if tipo=='sandbox':
+
+		appID='DESYd5321-ebf7-4520-b3f5-e00208d3d5d'
+		devID='54a3e269-9cb1-4bcd-9661-6f6ee46ac1b2'
+		certID='2b625291-078b-4a3f-a4da-63242a3a3c8b'
+		userToken='AgAAAA**AQAAAA**aAAAAA**uT1YUg**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhC5CHoAqdj6x9nY+seQ**K2ACAA**AAMAAA**a0831P1/pbhgeqiLFst/r9Gcj3SVmM/WSdIRF35qz8/kCtayD0PRGKHwKRJZviNcoeoDuo7v95JuZ3k/5KiPYWlCneD+Y5OCLDycEd/Fx9JC7xlTvuCyp5P+/Mm+4ETZtw+e4/3cbzWXwFOROtA2qTmfsNZBG0KGW1WTOFM/eNHKNSy2MlyckMZa5BqOiwzw5z6xR3g5kmCZHEC4ECEh3cTTnVmy8r371eiOYlKOz4F2ztraXd28+hGNGwgv67AOOFE0Zs+SQE2Ms/my1d41QgXlG6DLenxjOcDvr+eZGyf6Z/rTWOAPclFsA3FFwT7Xj5J1cL6HlFE4P5syX7OJQ6rwtm7x51cqHCyXOq1dyknNJmX3WCK9YPtCip/TfU4S2ZIF1hIb0sNKsnjxEvEnHuiAzg4wT1JJLrdMm4DXUqWlh7j09iDaen43lMcaYSsps4fhF8wMCzWfGjp5EyGtln8DQnkAZA1h3Hk/IZnHRVnz6Zj/4oMIMyt65pG1jjK6CSFGDC661KURCi3Ur3xY0UCOgoz21sCsawuhu38VT9cSkQH7/EZAlxEiG+L2L3trQI4yMEvvpF1pCcm4TNdM1DhtixNnx6hjNQbEnOxFvidYciNUCF2T+fHp9tJHXmD6/p0yQNm+peMwtDzDJduvr23/yGPdC4C2EMeImLFM8uitXQSJTwLpd0RGTV8ZIjFxbxjjngt8iSm+WXtvNWyLscUzJGQsR4N/Bu23W8lcBelOuxx9UCSZl1tJ7rdYKaJX'
+
+		return appID,devID,certID,userToken
+
+
+	elif tipo=='production':
+
+
+		appID='DESYd4638-a004-4e12-bd58-069cc5cb6b5'
+		devID='54a3e269-9cb1-4bcd-9661-6f6ee46ac1b2'
+		certID='fb74cbec-a46b-4432-b092-8b95fdb6f04e'
+		userToken='AgAAAA**AQAAAA**aAAAAA**+SJYUg**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wBlYSkCJeCpAydj6x9nY+seQ**Av4BAA**AAMAAA**qZ8+zn2XDIJabbf4rR6XEcFunKYpIJZiOk4w8Fio3pbeh5thcFs6Z3Vbx8qoD+fhkEgsCA2WQXDBIzYBcQZ5Lc14BjvxkPh5e1CWtCCkCq/i6JyKMhC39l6RnxWGaV0rZFH+Do/46zNjtN1Oyoj8ewGmJuMZGjaJRVSm4ie5hT8ZChf3+u9vpwW4AJBwpD7/c0OkgfGC2XXBeDpaIB2AMtNCcgCIjuH0Y+FL8KmI3kk1SpopavnY/HDDirxDliI0FFBHm3rkoCIFIzE89nTuiuNBBGKWAeWjbGHWOedBtI75HGlft9t4Hz0plh/QT9jCDJ4e0WUy18ED9Jo2/18R0gE0Ar5vQ92D2R20Kc7yvebHINczPaiIcHXp8zIqTV4ns0vE2LbV+onrdV+WufYHBXEDEiZBNdEqvrCLK/LbaYPbAKxl0l8jxd4t3QXzEVxXnG+xc53T1F0GB+/pHaqyjpDl8zYXkncf+t5RAcyaKGH67hNHzFbAjEtE0vnXHUOKZFZQl+78rGhXOQItaZDZ81zdQahfdWJQgEl6CVTIzU9Yi0Mz1llX/go+LdlcRYxlhm/Yd2/4O8fwjoQDjLtCS8UUuugN0L1okSRt9IzFY6fh8znxGD4SoO/9H+J2c10qoGYhYn8NchLxZv8kKdw0Db2m57Q1T09TEaanpqvjN4Ht81drFENgYp1wUA03tTpJPrecQw+Rk2k4DjM5Ed2+tVM6ubO7Fj9vVxr60YgBkJ7XJWcIfW5o+kPZZxHy3wnm'
+
+		return appID,devID,certID,userToken
+
+	else:
+
+		print 'wrong tipo!'
+
+
+
