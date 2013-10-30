@@ -1,6 +1,6 @@
 import codecs
 import myGetItem as gi
-
+import pickle
 
 
 
@@ -11,7 +11,7 @@ def sanitize(mylist):
 		b=a.strip()
 
 		if not type(b)==str:
-			b=str(b)
+			b=unicode(b)
 		try:
 			float(b)
 		except ValueError:
@@ -24,21 +24,15 @@ def sanitize(mylist):
 	return newlist
 
 
-def get_laptop_info(specsInfo,sellInfo):
+def get_laptop_info(specsInfo,sellInfo,itemID):
 
-	#print''
-	#print specsInfo
-	#print ''
-	#print ''
-	#print sellInfo
-	#print ''
-	#get_data_from_file('database.txt')
-	#tipo=specsInfo.get('Type',None)
-	#if tipo==None: 
-	#		print 'returning'
-	#	print specsInfo
-	#	return None
-	#brand=
+
+	#BRAND
+	brand=specsInfo.get('Brand','unknown')
+
+
+	
+	#PROCESSOR SPEED
 	procSpeed=specsInfo.get('Processor Speed',None)
 	if procSpeed==None:
 		return None
@@ -60,15 +54,10 @@ def get_laptop_info(specsInfo,sellInfo):
 			print 'the whole line is:'
 			print specsInfo['Processor Speed']
 			return None
-			#a=raw_input('processor Speed Ok?')
-			#if a=='yes':
-			#	procSpeed=a			
-			#else:
-			#	return None
-			#raw_input('')
-		#
+
 	#
-	#
+	#PROCESSOR TYPE
+	procType=specsInfo.get('Processor Type','unknown')
 	#
 	#
 	screenSize=specsInfo.get('Screen Size',None)
@@ -81,6 +70,10 @@ def get_laptop_info(specsInfo,sellInfo):
 		screenSize=screenSize[:where]
 
 	#		
+	#
+	timeLeft=sellInfo.get('timeLeft','unknown')
+	#
+	listingType=sellInfo.get('listingType','unknown')
 	#
 	#=================================
 
@@ -152,12 +145,13 @@ def get_laptop_info(specsInfo,sellInfo):
 	else:
 		print 'unknown memory input format ',memory
 		return None
+	#
+	#
+	#
 
-
-	#print 'memory =',memory
 	#
 	#
-	#
+	#=========CURRENT PRICE================
 	currentPrice=sellInfo.get('ConvertedCurrentPrice',None)
 	if currentPrice==None:
 		print 'No converted price!'
@@ -167,16 +161,34 @@ def get_laptop_info(specsInfo,sellInfo):
 	bidCount=sellInfo.get('BidCount',None)
 	if bidCount==None:return None
 
+
+
 	#print ' bidCount ',bidCount
 
-	retList=[procSpeed,screenSize,hardDrive,memory,currentPrice,bidCount]
+	retList=[itemID,procSpeed,screenSize,hardDrive,memory,currentPrice]
 	outList=sanitize(retList)
 	if outList==None:
 		print retList
+	else:
+		outList.append(brand)
+		outList.append(procType)
+		outList.append(timeLeft)
+		outList.append(listingType)
 	return outList
-	#return [procSpeed,screenSize,hardDrive,memory,currentPrice,bidCount]
 
-	#raw_input('')
+def get_seller_info(sellerInfo,itemID):
+	#
+	#
+	sellerId=sellerInfo.get('UserID','unknown')
+	feedBack=sellerInfo.get('PositiveFeedbackPercent','unknown')
+	aboutMe=sellerInfo.get('AboutMePage',False)
+	#name=sellerInfo.get('name','unknown')
+	feedBackRating=sellerInfo.get('FeedbackRatingStar','unknown')
+
+	retList=[itemID,sellerId,feedBack,aboutMe,feedBackRating]
+	return retList
+
+
 
 
 def write_header(outFile):
@@ -186,7 +198,9 @@ def write_header(outFile):
 	header+='hardDrive'+'\t'
 	header+='memory'+'\t'
 	header+='currentPrice'+'\t'
-	header+='bidCount'
+	header+='Brand'+'\t'
+	header+='procType'
+
 
 	outFile.write(header+'\n')
 
@@ -200,38 +214,44 @@ def write_info(info,outFile):
 
 
 
-def get_data_from_file(fileName):
+def get_data_from_file(inFileName,outFileName):
 
 
 
-	outFile=codecs.open('laptopData.txt','a','utf-8')
+	outFile=codecs.open(outFileName,'a','utf-8')
+	outSellerInfoFile=codecs.open('sellerDatabase.txt','a','utf-8')
 	raw_input('the file is now on append mode. Is this OK?')
-	#write_header(outFile)
-
-
-	f=codecs.open('trimmedTestFile.txt','r','utf-8')
+	f=codecs.open(inFileName,'r','utf-8')
 	l=f.readlines()
-	for line in [l[0]]:
-		print line
 
 	for i,line in enumerate(l[1:]):
 
+		if i<1380:
+			continue
+			
 		print 'iteration ',i
 		splitLine=line.split('\t')
 		itemID=splitLine[0]
-		itemSpecs,sellInfo=gi.get_info_from_item(itemID)
+		itemSpecs,sellInfo,sellerInfo=gi.get_info_from_item(itemID)
 		if len(itemSpecs)==0:
 			continue
 		if len(sellInfo)==0:
 			continue
+		if len(sellerInfo)==0:
+			continue
+	
 
-		info=get_laptop_info(itemSpecs,sellInfo)
+		info=get_laptop_info(itemSpecs,sellInfo,itemID)
 		if not info==None:
 			write_info(info,outFile)
 
+		sellerinfo=get_seller_info(sellerInfo,itemID)
+		write_info(sellerinfo,outSellerInfoFile)
+
+		#raw_input('')
 	outFile.close()
 
 
 if __name__=='__main__':
 
-	get_data_from_file('database.txt')
+	get_data_from_file('newLaptops.txt','newDatabase.txt')

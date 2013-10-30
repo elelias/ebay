@@ -44,10 +44,5 @@ def process_query_result(element):
 	line+=unicode(currentPrice)+'\t'
 	line+=unicode(currencyId)+'\t'
 	line+=unicode(convertedPrice)+'\t'
-	#
-	#
-	#print 'the line is ',line
 
-	#print categoryId,title,categoryName,country,autoPay,postalCode,currentPrice,currencyId,convertedPrice
-	#raw_input('vamos')
 	return line

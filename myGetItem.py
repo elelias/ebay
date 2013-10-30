@@ -1,11 +1,10 @@
-
 import cgi, os
 #import the HTTP, DOM and ConfigParser modules needed
 import httplib, ConfigParser
 from xml.dom.minidom import parse, parseString
 from getIDs import get_id
 import time
-
+import pickle
 
 def getSingleValue(node,tag):
     nl=node.getElementsByTagName(tag)
@@ -93,9 +92,12 @@ def get_itemId(itemID):
 
         else: #eBay returned no errors - output results
             
-
-
+            #item = response.getElementsByTagName('TimeLeft')
+            #for a in item[0].childNodes:
+            #    print a
             return response            
+
+
 
             # cat=((primaryCategoryNode.getElementsByTagName('CategoryName')[0]).childNodes[0]).nodeValue
             # sta= ((listingDetailsNode.getElementsByTagName('StartTime')[0]).childNodes[0]).nodeValue
@@ -177,11 +179,6 @@ def getSellingStatus(response):
         return {}
 
     sellingStatus = response.getElementsByTagName('SellingStatus')
-    #currency = (sellingStatusNode.getElementsByTagName('CurrentPrice')[0]).getAttribute('currencyID');
-    #print "<P>Current Price: " + ((sellingStatusNode.getElementsByTagName('CurrentPrice')[0]).childNodes[0]).nodeValue + currency
-    #print "<BR>Start Price: " + ((response.getElementsByTagName('StartPrice')[0]).childNodes[0]).nodeValue + currency
-    #print "<BR>BuyItNow Price: " + ((response.getElementsByTagName('BuyItNowPrice')[0]).childNodes[0]).nodeValue + currency
-    #print "<BR>Bid Count: " + ((sellingStatusNode.getElementsByTagName('BidCount')[0]).childNodes[0]).nodeValue
 
     sellDict={}
     try:
@@ -190,13 +187,86 @@ def getSellingStatus(response):
         return {}
 
     for c in sellNode.childNodes:
+        #print c
         #getSellingStatus
         nodeName=c.nodeName
         nodeValue=c.childNodes[0].nodeValue
         sellDict[nodeName]=nodeValue
 
+    tipo=response.getElementsByTagName('ListingType')
+    try:
+        tipo=tipo[0]
+        listingtype=tipo.childNodes[0].nodeValue
+        print 'listingtype ',listingtype
+    except:
+        listingtype='unknown'
+
+    sellDict['listingType']=listingtype
+
+
+    timeleft=response.getElementsByTagName('TimeLeft')
+    try:
+        timeleft=timeleft[0]
+        timeLeft=timeleft.childNodes[0].nodeValue
+    except:
+        timeLeft='unknown'
+
+    sellDict['timeLeft']=timeLeft
+
     return sellDict
 
+
+
+def getSellerInfo(response):
+
+
+    if response=='NoResponse':
+        print 'Cant get a response!'
+        return {}
+
+    if response==None:
+        print 'No Reponse. Calling with itemID= ',itemID
+        return {}	
+
+    attributeSet=response.getElementsByTagName('Seller')
+    
+    if attributeSet==None:
+        return {}
+    try:
+        attributeNode=attributeSet[0]
+    except IndexError:
+        #print 'out of bounds error',attributeSet
+        return {}
+
+
+    attDict={}    
+    for c in attributeNode.childNodes:
+        #print c
+        detail=[]        
+        #print 'the nodeName is ',c.nodeName
+        for g in c.childNodes:            
+            #print '      ',g
+            if not g.hasChildNodes():
+                attDict[c.nodeName]=g.nodeValue
+            else:
+                pass
+    
+    # attributeSet=response.getElementsByTagName('RegistrationAddress')
+    # try:
+    #     print 'attribute set ',attributeSet        
+    #     attributeSet=attributeSet[0]
+
+    #     name = attributeSet.getElementsByTagName('Name')[0].childNodes[0].nodeValue
+    # except:
+    #     name = ''
+    #
+
+
+    name='unknown'
+    attDict['name']=name
+
+
+    return attDict
 
 
 
@@ -216,9 +286,19 @@ def getItemProperties(response):
         print 'No Reponse. Calling with itemID= ',itemID
         return {}
 
+    # print 'this is the response'
+    # print response.childNodes
+    # for a in response.childNodes:
+    # 	print a.childNodes
+    # 	for b in a.childNodes:
+    # 		print "     ",b.childNodes
+    # 		for c in b.childNodes:
+    # 			print "a new child of ",c, c.childNodes
+    # 	raw_input('')
 
     attributeSet=response.getElementsByTagName('ItemSpecifics')
     if attributeSet==None:
+        print 'empty!'
         return {}
     try:
         attributeNode=attributeSet[0]
@@ -237,10 +317,7 @@ def getItemProperties(response):
             for k in g.childNodes:
                 if not 'ItemSpecific' in k.nodeValue:
                     detail.append(k.nodeValue)
-                    #print ''
-                    #print k
-                    #print k.nodeValue
-                    #print ''
+ 
         #print detail
         if len(detail)>1:
             attDict[detail[0]]=detail[1]
@@ -254,55 +331,17 @@ def get_info_from_item(itemID):
     response=get_response(itemID)
     itemSpecs=getItemProperties(response)
     sellInfo=getSellingStatus(response)
+    sellerInfo=getSellerInfo(response)
 
-
-    return itemSpecs,sellInfo
+    return itemSpecs,sellInfo,sellerInfo
 
 
 
 if __name__=='__main__':
 
 
-    itemSpecs,sellInfo=get_info_from_item("350865067425")
+    itemSpecs,sellInfo,sellerInfo=get_info_from_item("271293539303")
     print itemSpecs
     print sellInfo
-
-
-    #print getItemProperties("350865067425")
-    #print getSellingStatus("350865067425")    
-    # response=get_itemId("350865067425")
-    # primaryCategoryNode = ((response.getElementsByTagName('PrimaryCategory')[0]).childNodes[0]).nodeValue
-    # #sellerContactDetails = ((response.getElementsByTagName("SellerContactDetails")[0]).childNodes[0]).nodeValue
-    # #sellerNode=response.getElementsByTagName("Seller")[0]
-    # #feedback=getSingleValue(sellerNode,"UserID")
-    # attributeSet=response.getElementsByTagName('ItemSpecifics')
-    # #brand=getSingleValue(attributeSet[0],'Brand')
-
-    # attributeNode=attributeSet[0]
-    # attDict={}    
-    # for c in attributeNode.childNodes:
-
-    #     detail=[]        
-    #     for g in c.childNodes:
-
-
-    #         for k in g.childNodes:
-    #             if not 'ItemSpecific' in k.nodeValue:
-    #                 detail.append(k.nodeValue)
-    #                 #print ''
-    #                 #print k
-    #                 #print k.nodeValue
-    #                 #print ''
-    #     print detail
-    #     if len(detail)>1:
-    #         attDict[detail[0]]=detail[1]
-
-    # print 'the properties are ',attDict
-
-
-
-
-
-
-
+    print sellerInfo
 

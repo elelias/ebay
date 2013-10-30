@@ -38,28 +38,11 @@ def init_options():
 def run(opts,findQuery):
 
 
-    api = finding(siteid='EBAY-NLBE', debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
+    api = finding(siteid='EBAY-US', debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
                   warnings=True)
-
-    #keywords=findQuery['keywords']
-    #categoryId=findQuery['categoryId']
-    #itemFilter=findQuery['itemFilter']
 
 
     api.execute('findItemsAdvanced',findQuery)
-#    api.execute('findItemsAdvanced', {
-#         'keywords': "laptop",
-#         'categoryid': "51148",
-#         'itemFilter': [
-#             {'name': 'Condition',
-#              'value': 'Used'},
-#             {'name': 'LocatedIn',
-#              'value': 'GB'}
-#             
-#         ],
-#         'affiliate': {'trackingId': 1},
-#         'sortOrder': 'CountryDescending',
-#     })
 
     if api.error():
         raise Exception(api.error())
@@ -98,7 +81,7 @@ if __name__ == "__main__":
     print "Finding samples for SDK version %s" % ebaysdk.get_version()
     (opts, args) = init_options()
 
-    findQuery= {'keywords': "laptop" ,#'categoryId': [{'value': "177"}],
+    findQuery= {'keywords': "laptop" ,'categoryId': [{'value': "177"}],
         'itemFilter': [{'name': "Condition",'value': "New"},{'name': "LocatedIn",'value': "US"}],
         'paginationInput':{'entriesPerPage':100,'pageNumber':1}
     }      
