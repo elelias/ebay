@@ -143,6 +143,8 @@ def laptopDataQuery(sqlQuery):
 		newRow.append(n_screensize)
 		newRow.append(n_harddrive)
 		newRow.append(n_memory)
+
+		#print 'n_brand is ',n_brand
 		newRow.append(n_brand)
 		newRow.append(n_proctype)
 		#newRow.append(n_price)
@@ -174,13 +176,12 @@ def kMeansCluster():
 
 
 		p=[]
-		p.append((0,'speed'))
+		p.append((0,'processor speed'))
 		p.append((1,'screen size'))
 		p.append((2,'hard drive'))
 		p.append((3,'memory'))
-		#p.append((4,'price'))
-		p.append((4,'processor Type'))
-		p.append((5,'brand'))
+		p.append((4,'brand'))
+		p.append((5,'processor Type'))
 
 
 		plotDict=[]
@@ -207,9 +208,9 @@ def kMeansCluster():
 				tLabel=plot['tLabel']				
 
 				print 'axes ',fAxis,sAxis,tAxis
-				print X[:,fAxis]
-				print X[:,sAxis]
-				print X[:,tAxis]				
+				#print X[:,fAxis]
+				#print X[:,sAxis]
+				#print X[:,tAxis]				
 
 				labels=est.labels_ #labels of each point
 				ax.scatter(X[:, fAxis], X[:, sAxis], X[:, tAxis], c=labels.astype(np.float))
@@ -234,12 +235,13 @@ def hierarchicalCluster():
 	import matplotlib as mp
 
 	p=[]
-	p.append((0,'speed'))
+	p.append((0,'processor speed'))
 	p.append((1,'screen size'))
 	p.append((2,'hard drive'))
 	p.append((3,'memory'))
-	p.append((4,'processor Type'))
-	p.append((5,'brand'))
+	p.append((4,'brand'))	
+	p.append((5,'processor Type'))
+
 
 	sqlQuery='SELECT * FROM laptops;'
 	rowData,pList=laptopDataQuery(sqlQuery)
@@ -266,7 +268,7 @@ def pricePredictor():
 	print 'length rowData',len(rowData)
 	X=np.array(rowData)
 
-	clf=svm.SVR(kernel='rbf',C=1e3,gamma=0.1)
+	clf=svm.SVR(kernel='linear',C=1e3,gamma=0.1)
 	clf.fit(X,pList)
 
 
@@ -285,9 +287,75 @@ def pricePredictor():
 	print Y
 
 
-	n,bins,patches = pl.hist(Y,10,(0,10),label='what?')
+	n,bins,patches = pl.hist(Y,10,(0,4),label='what?')
 	pl.show()
 	raw_input('')
+
+
+
+def elbowCurve():
+
+
+	from scipy.cluster.vq import kmeans,vq
+	import matplotlib.pyplot as plt
+	from scipy.spatial.distance import cdist,pdist
+	from matplotlib import cm
+
+
+	sqlQuery='SELECT * FROM laptops;'
+	rowData,pList=laptopDataQuery(sqlQuery)
+	X=np.array(rowData)
+	#K=range(1,10)
+
+	K_MAX = 8
+	KK = range(1,K_MAX+1)
+
+
+	KM = [kmeans(X,k) for k in KK]
+	centroids = [cent for (cent,var) in KM]
+
+
+
+	# alternative: scipy.spatial.distance.cdist
+	D_k = [cdist(X, cent, 'euclidean') for cent in centroids]
+	cIdx = [np.argmin(D,axis=1) for D in D_k]
+	dist = [np.min(D,axis=1) for D in D_k]
+	avgWithinSS = [sum(d)/X.shape[0] for d in dist]
+
+	tot_withinss = [sum(d**2) for d in dist]  # Total within-cluster sum of squares
+	totss = sum(pdist(X)**2)/X.shape[0]       # The total sum of squares
+	betweenss = totss - tot_withinss          # The between-cluster sum of squares
+
+	#kIdx=4
+	kIdx = 3       # K=10
+	clr = cm.spectral( np.linspace(0,1,10) ).tolist()
+	mrk = 'os^p<dvh8>+x.'
+
+# elbow curve
+	fig = plt.figure()
+	ax = fig.add_subplot(111)
+	ax.plot(KK, betweenss/totss*100, 'b*-')
+	ax.plot(KK[kIdx], betweenss[kIdx]/totss*100, marker='o', markersize=12, 
+	    markeredgewidth=2, markeredgecolor='r', markerfacecolor='None')
+	ax.set_ylim((0,100))
+	plt.grid(True)
+	plt.xlabel('Number of clusters')
+	plt.ylabel('Percentage of variance explained (%)')
+	plt.title('Elbow for KMeans clustering')
+	pl.show()
+	raw_input('done')
+	# fig =  plt.figure()
+	# ax = fig.add_subplot(111)
+	# ax.plot(K,avgWithinSS,'b*-')
+	# ax.plot(K[kIdx], avgWithinSS[kIdx], marker='o', markersize=12, 
+	#     markeredgewidth=2, markeredgecolor='r', markerfacecolor='None')
+	# plt.grid(True)
+	# plt.xlabel('Number of clusters')
+	# plt.ylabel('Average within-cluster sum of squares')
+	# plt.title('Elbow for KMeans clustering')
+	# plt.show()
+	# raw_input('done')
+
 
 if __name__=='__main__':
 
@@ -300,6 +368,7 @@ if __name__=='__main__':
 	#kMeansCluster()
 	#hierarchicalCluster()
 	pricePredictor()
+	#elbowCurve()
 
 
 
